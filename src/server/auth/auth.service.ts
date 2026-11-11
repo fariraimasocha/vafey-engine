@@ -9,3 +9,10 @@ export async function requireAdmin() {
   if (session.user.role !== 'admin') throw new Error('Forbidden')
   return session
 }
+
+/** Throws unless the caller is signed in (any role). Use in student-facing server functions. */
+export async function requireUser() {
+  const session = await auth.api.getSession({ headers: getRequestHeaders() })
+  if (!session) throw new Error('Unauthorized')
+  return session
+}

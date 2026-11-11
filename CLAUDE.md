@@ -105,6 +105,16 @@ Rules:
   (`auth.api.*`), never by writing to the user table directly. Admins can't demote, suspend or delete themselves.
 - Enrollment rules (enroll, override status, reset progress, unenroll) live in
   `server/enrollments/enrollments.service.ts`. The student app will reuse them.
+- **Student area** (`/learn`, layout `src/routes/_learn.tsx`): any signed-in user. Non-admins hitting the admin
+  dashboard are redirected here. Pages: My learning (enrolled + published courses to self-enroll), course overview
+  (lock state), lesson reader (`components/editor/lesson-viewer.tsx`, read-only Lexical), final assessment.
+  - `server/learn/*` is **user-scoped**. Handlers call `requireUser()` and pass `session.user.id`. Never accept
+    a userId from the client.
+  - Rules enforced on the server: lessons unlock strictly in order (`orderedLessons`), the assessment unlocks only
+    after every lesson, the answer key (`isCorrect`) is never sent to students, and grading happens server-side.
+  - Unlimited retakes. Once any attempt passes, the enrollment stays `passed`.
+  - Errors the student should see go through `components/learn/learn-error.tsx`. If you add a new one, add its
+    message to that file's whitelist.
 - Security baseline (keep it):
   - `src/server.ts` wraps the Worker and adds CSP, X-Frame-Options, nosniff, Referrer-Policy,
     Permissions-Policy and HSTS to every response. New third-party scripts, fonts or APIs must be added to the CSP.

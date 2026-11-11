@@ -15,7 +15,7 @@ import { Toolbar } from './toolbar'
 
 // Lexical renders semantic tags (h2, ul, table…); `.lesson-prose` in styles.css styles them.
 // Only things without a semantic tag need theme classes.
-const theme = {
+export const lessonTheme = {
   text: { bold: 'font-semibold', italic: 'italic', code: 'lesson-inline-code' },
   code: 'lesson-code-block',
   link: 'lesson-link',
@@ -41,7 +41,7 @@ export function LessonEditor({
       initialConfig={{
         namespace: 'lesson',
         nodes: LESSON_NODES,
-        theme,
+        theme: lessonTheme,
         editorState: () => $importLessonMarkdown(defaultValue),
         onError: (error) => {
           throw error

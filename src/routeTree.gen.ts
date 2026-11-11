@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as DashboardRouteImport } from './routes/_dashboard'
+import { Route as LearnRouteImport } from './routes/_learn'
 import { Route as AuthSignInRouteImport } from './routes/_auth/sign-in'
 import { Route as AuthSignUpRouteImport } from './routes/_auth/sign-up'
 import { Route as DashboardIndexRouteImport } from './routes/_dashboard/index'
@@ -18,8 +19,12 @@ import { Route as DashboardCoursesIndexRouteImport } from './routes/_dashboard/c
 import { Route as DashboardCoursesCourseIdRouteImport } from './routes/_dashboard/courses/$courseId'
 import { Route as DashboardStudentsIndexRouteImport } from './routes/_dashboard/students/index'
 import { Route as DashboardStudentsUserIdRouteImport } from './routes/_dashboard/students/$userId'
+import { Route as LearnLearnIndexRouteImport } from './routes/_learn/learn/index'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as LearnLearnCourseIdIndexRouteImport } from './routes/_learn/learn/$courseId/index'
+import { Route as LearnLearnCourseIdAssessmentRouteImport } from './routes/_learn/learn/$courseId/assessment'
 import { Route as ApiAdminCoursesImportRouteImport } from './routes/api/admin/courses/import'
+import { Route as LearnLearnCourseIdLessonsLessonIdRouteImport } from './routes/_learn/learn/$courseId/lessons/$lessonId'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/_auth',
@@ -27,6 +32,10 @@ const AuthRoute = AuthRouteImport.update({
 } as any)
 const DashboardRoute = DashboardRouteImport.update({
   id: '/_dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LearnRoute = LearnRouteImport.update({
+  id: '/_learn',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthSignInRoute = AuthSignInRouteImport.update({
@@ -65,16 +74,38 @@ const DashboardStudentsUserIdRoute = DashboardStudentsUserIdRouteImport.update({
   path: '/students/$userId',
   getParentRoute: () => DashboardRoute,
 } as any)
+const LearnLearnIndexRoute = LearnLearnIndexRouteImport.update({
+  id: '/learn/',
+  path: '/learn/',
+  getParentRoute: () => LearnRoute,
+} as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LearnLearnCourseIdIndexRoute = LearnLearnCourseIdIndexRouteImport.update({
+  id: '/learn/$courseId/',
+  path: '/learn/$courseId/',
+  getParentRoute: () => LearnRoute,
+} as any)
+const LearnLearnCourseIdAssessmentRoute =
+  LearnLearnCourseIdAssessmentRouteImport.update({
+    id: '/learn/$courseId/assessment',
+    path: '/learn/$courseId/assessment',
+    getParentRoute: () => LearnRoute,
+  } as any)
 const ApiAdminCoursesImportRoute = ApiAdminCoursesImportRouteImport.update({
   id: '/api/admin/courses/import',
   path: '/api/admin/courses/import',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LearnLearnCourseIdLessonsLessonIdRoute =
+  LearnLearnCourseIdLessonsLessonIdRouteImport.update({
+    id: '/learn/$courseId/lessons/$lessonId',
+    path: '/learn/$courseId/lessons/$lessonId',
+    getParentRoute: () => LearnRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof DashboardIndexRoute
@@ -85,7 +116,11 @@ export interface FileRoutesByFullPath {
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/courses/': typeof DashboardCoursesIndexRoute
   '/students/': typeof DashboardStudentsIndexRoute
+  '/learn/': typeof LearnLearnIndexRoute
+  '/learn/$courseId/assessment': typeof LearnLearnCourseIdAssessmentRoute
   '/api/admin/courses/import': typeof ApiAdminCoursesImportRoute
+  '/learn/$courseId/': typeof LearnLearnCourseIdIndexRoute
+  '/learn/$courseId/lessons/$lessonId': typeof LearnLearnCourseIdLessonsLessonIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof DashboardIndexRoute
@@ -96,12 +131,17 @@ export interface FileRoutesByTo {
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/courses': typeof DashboardCoursesIndexRoute
   '/students': typeof DashboardStudentsIndexRoute
+  '/learn': typeof LearnLearnIndexRoute
+  '/learn/$courseId/assessment': typeof LearnLearnCourseIdAssessmentRoute
   '/api/admin/courses/import': typeof ApiAdminCoursesImportRoute
+  '/learn/$courseId': typeof LearnLearnCourseIdIndexRoute
+  '/learn/$courseId/lessons/$lessonId': typeof LearnLearnCourseIdLessonsLessonIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_auth': typeof AuthRouteWithChildren
   '/_dashboard': typeof DashboardRouteWithChildren
+  '/_learn': typeof LearnRouteWithChildren
   '/_auth/sign-in': typeof AuthSignInRoute
   '/_auth/sign-up': typeof AuthSignUpRoute
   '/_dashboard/': typeof DashboardIndexRoute
@@ -110,7 +150,11 @@ export interface FileRoutesById {
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/_dashboard/courses/': typeof DashboardCoursesIndexRoute
   '/_dashboard/students/': typeof DashboardStudentsIndexRoute
+  '/_learn/learn/': typeof LearnLearnIndexRoute
+  '/_learn/learn/$courseId/assessment': typeof LearnLearnCourseIdAssessmentRoute
   '/api/admin/courses/import': typeof ApiAdminCoursesImportRoute
+  '/_learn/learn/$courseId/': typeof LearnLearnCourseIdIndexRoute
+  '/_learn/learn/$courseId/lessons/$lessonId': typeof LearnLearnCourseIdLessonsLessonIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -123,7 +167,11 @@ export interface FileRouteTypes {
     | '/api/auth/$'
     | '/courses/'
     | '/students/'
+    | '/learn/'
+    | '/learn/$courseId/assessment'
     | '/api/admin/courses/import'
+    | '/learn/$courseId/'
+    | '/learn/$courseId/lessons/$lessonId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -134,11 +182,16 @@ export interface FileRouteTypes {
     | '/api/auth/$'
     | '/courses'
     | '/students'
+    | '/learn'
+    | '/learn/$courseId/assessment'
     | '/api/admin/courses/import'
+    | '/learn/$courseId'
+    | '/learn/$courseId/lessons/$lessonId'
   id:
     | '__root__'
     | '/_auth'
     | '/_dashboard'
+    | '/_learn'
     | '/_auth/sign-in'
     | '/_auth/sign-up'
     | '/_dashboard/'
@@ -147,12 +200,17 @@ export interface FileRouteTypes {
     | '/api/auth/$'
     | '/_dashboard/courses/'
     | '/_dashboard/students/'
+    | '/_learn/learn/'
+    | '/_learn/learn/$courseId/assessment'
     | '/api/admin/courses/import'
+    | '/_learn/learn/$courseId/'
+    | '/_learn/learn/$courseId/lessons/$lessonId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   AuthRoute: typeof AuthRouteWithChildren
   DashboardRoute: typeof DashboardRouteWithChildren
+  LearnRoute: typeof LearnRouteWithChildren
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiAdminCoursesImportRoute: typeof ApiAdminCoursesImportRoute
 }
@@ -171,6 +229,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_learn': {
+      id: '/_learn'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof LearnRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_auth/sign-in': {
@@ -222,6 +287,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardStudentsUserIdRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/_learn/learn/': {
+      id: '/_learn/learn/'
+      path: '/learn'
+      fullPath: '/learn/'
+      preLoaderRoute: typeof LearnLearnIndexRouteImport
+      parentRoute: typeof LearnRoute
+    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
@@ -229,12 +301,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_learn/learn/$courseId/': {
+      id: '/_learn/learn/$courseId/'
+      path: '/learn/$courseId'
+      fullPath: '/learn/$courseId/'
+      preLoaderRoute: typeof LearnLearnCourseIdIndexRouteImport
+      parentRoute: typeof LearnRoute
+    }
+    '/_learn/learn/$courseId/assessment': {
+      id: '/_learn/learn/$courseId/assessment'
+      path: '/learn/$courseId/assessment'
+      fullPath: '/learn/$courseId/assessment'
+      preLoaderRoute: typeof LearnLearnCourseIdAssessmentRouteImport
+      parentRoute: typeof LearnRoute
+    }
     '/api/admin/courses/import': {
       id: '/api/admin/courses/import'
       path: '/api/admin/courses/import'
       fullPath: '/api/admin/courses/import'
       preLoaderRoute: typeof ApiAdminCoursesImportRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_learn/learn/$courseId/lessons/$lessonId': {
+      id: '/_learn/learn/$courseId/lessons/$lessonId'
+      path: '/learn/$courseId/lessons/$lessonId'
+      fullPath: '/learn/$courseId/lessons/$lessonId'
+      preLoaderRoute: typeof LearnLearnCourseIdLessonsLessonIdRouteImport
+      parentRoute: typeof LearnRoute
     }
   }
 }
@@ -271,9 +364,27 @@ const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
   DashboardRouteChildren,
 )
 
+interface LearnRouteChildren {
+  LearnLearnIndexRoute: typeof LearnLearnIndexRoute
+  LearnLearnCourseIdAssessmentRoute: typeof LearnLearnCourseIdAssessmentRoute
+  LearnLearnCourseIdIndexRoute: typeof LearnLearnCourseIdIndexRoute
+  LearnLearnCourseIdLessonsLessonIdRoute: typeof LearnLearnCourseIdLessonsLessonIdRoute
+}
+
+const LearnRouteChildren: LearnRouteChildren = {
+  LearnLearnIndexRoute: LearnLearnIndexRoute,
+  LearnLearnCourseIdAssessmentRoute: LearnLearnCourseIdAssessmentRoute,
+  LearnLearnCourseIdIndexRoute: LearnLearnCourseIdIndexRoute,
+  LearnLearnCourseIdLessonsLessonIdRoute:
+    LearnLearnCourseIdLessonsLessonIdRoute,
+}
+
+const LearnRouteWithChildren = LearnRoute._addFileChildren(LearnRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRouteWithChildren,
   DashboardRoute: DashboardRouteWithChildren,
+  LearnRoute: LearnRouteWithChildren,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiAdminCoursesImportRoute: ApiAdminCoursesImportRoute,
 }

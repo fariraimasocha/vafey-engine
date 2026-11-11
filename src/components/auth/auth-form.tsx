@@ -14,7 +14,7 @@ const copy = {
         welcome <em>back</em>
       </>
     ),
-    subtitle: 'Sign in to manage your courses.',
+    subtitle: 'Sign in to continue.',
     submit: 'Sign in',
     switchText: 'New to Vafey?',
     switchLink: { to: '/sign-up', label: 'Create an account' },
@@ -25,7 +25,7 @@ const copy = {
         let's <em>begin</em>
       </>
     ),
-    subtitle: 'Create your account to get started.',
+    subtitle: 'Create your account to start learning.',
     submit: 'Create account',
     switchText: 'Already have an account?',
     switchLink: { to: '/sign-in', label: 'Sign in' },
