@@ -8,6 +8,7 @@ import { assessmentQuery, learnFns, useAssessment, useLearnMutation } from '@/ho
 import { cn } from '@/lib/utils'
 
 export const Route = createFileRoute('/_learn/learn/$courseId/assessment')({
+  staticData: { title: 'Final assessment' },
   loader: ({ context, params }) => context.queryClient.prefetchQuery(assessmentQuery(params.courseId)),
   errorComponent: LearnError,
   component: () => (

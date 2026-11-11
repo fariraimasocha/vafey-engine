@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button'
 import { learnFns, lessonQuery, useLearnMutation, useLesson } from '@/hooks/use-learn'
 
 export const Route = createFileRoute('/_learn/learn/$courseId/lessons/$lessonId')({
+  staticData: { title: 'Lesson' },
   loader: ({ context, params }) => context.queryClient.prefetchQuery(lessonQuery(params.courseId, params.lessonId)),
   errorComponent: LearnError,
   component: () => (

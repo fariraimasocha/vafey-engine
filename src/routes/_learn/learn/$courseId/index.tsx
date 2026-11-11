@@ -14,6 +14,7 @@ import { learnCourseQuery, useLearnCourse } from '@/hooks/use-learn'
 import { cn } from '@/lib/utils'
 
 export const Route = createFileRoute('/_learn/learn/$courseId/')({
+  staticData: { title: 'Course' },
   loader: ({ context, params }) => context.queryClient.prefetchQuery(learnCourseQuery(params.courseId)),
   errorComponent: LearnError,
   component: () => (

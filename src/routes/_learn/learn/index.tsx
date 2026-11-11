@@ -10,6 +10,7 @@ import { MinimalCard, MinimalCardDescription, MinimalCardTitle } from '@/compone
 import { learnFns, myLearningQuery, useLearnMutation, useMyLearning } from '@/hooks/use-learn'
 
 export const Route = createFileRoute('/_learn/learn/')({
+  staticData: { title: 'My learning' },
   head: () => ({ meta: [{ title: 'My learning · Vafey' }] }),
   loader: ({ context }) => context.queryClient.prefetchQuery(myLearningQuery),
   errorComponent: LearnError,

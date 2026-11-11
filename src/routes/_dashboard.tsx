@@ -1,5 +1,8 @@
 import { Outlet, createFileRoute, redirect, useMatches } from '@tanstack/react-router'
-import { AppSidebar } from '@/components/layout/app-sidebar'
+import { PhBookOpen } from '@/components/icons/ph/book-open'
+import { PhHouse } from '@/components/icons/ph/house'
+import { PhUsers } from '@/components/icons/ph/users'
+import { AppSidebar, type NavItem } from '@/components/layout/app-sidebar'
 import { Separator } from '@/components/ui/separator'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import { TooltipProvider } from '@/components/ui/tooltip'
@@ -16,6 +19,12 @@ export const Route = createFileRoute('/_dashboard')({
   component: DashboardLayout,
 })
 
+const ADMIN_NAV: NavItem[] = [
+  { title: 'Overview', to: '/', icon: PhHouse },
+  { title: 'Courses', to: '/courses', icon: PhBookOpen },
+  { title: 'Students', to: '/students', icon: PhUsers },
+]
+
 function DashboardLayout() {
   // Each page sets `staticData: { title }`; the deepest match is the current page.
   const title = useMatches({ select: (m) => m.at(-1)?.staticData.title })
@@ -23,7 +32,7 @@ function DashboardLayout() {
   return (
     <TooltipProvider>
       <SidebarProvider>
-        <AppSidebar />
+        <AppSidebar homeTo="/" items={ADMIN_NAV} />
         <SidebarInset className="min-w-0 bg-background">
           <header className="sticky top-0 z-20 flex h-16 shrink-0 items-center gap-2 border-b border-line bg-background px-3 sm:px-6">
             {/* Desktop toggles from the sidebar header; phones need one here. */}
