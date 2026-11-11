@@ -61,7 +61,7 @@ export function NavUser() {
               <span className="block truncate text-xs text-muted-foreground">{user.email}</span>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => signOut().then(() => navigate({ to: '/' }))}>
+            <DropdownMenuItem onClick={() => signOut().then(() => navigate({ to: '/sign-in' }))}>
               <PhSignOut className="size-4" />
               Sign out
             </DropdownMenuItem>

@@ -3,6 +3,7 @@ import type { ComponentType, SVGProps } from 'react'
 import { PhBookOpen } from '@/components/icons/ph/book-open'
 import { PhHouse } from '@/components/icons/ph/house'
 import { PhUsers } from '@/components/icons/ph/users'
+import { Logo } from '@/components/layout/logo'
 import { NavUser } from '@/components/layout/nav-user'
 import {
   Sidebar,
@@ -41,10 +42,7 @@ export function AppSidebar() {
           to="/"
           className="flex min-w-0 items-center gap-2 rounded-md md:group-data-[collapsible=icon]:group-hover/header:hidden"
         >
-          <span className="grid size-8 shrink-0 place-items-center rounded-md bg-ink text-sm font-bold text-white">V</span>
-          <span className="truncate text-xl font-semibold tracking-tight text-ink group-data-[collapsible=icon]:hidden">
-            Vafey
-          </span>
+          <Logo className="group-data-[collapsible=icon]:[&_[data-wordmark]]:hidden group-data-[collapsible=icon]:[&_img]:h-4" />
         </Link>
         <SidebarTrigger className="hidden size-8 shrink-0 text-ink-soft hover:bg-sidebar-accent md:inline-flex md:group-data-[collapsible=icon]:sr-only md:group-data-[collapsible=icon]:group-hover/header:not-sr-only" />
       </SidebarHeader>

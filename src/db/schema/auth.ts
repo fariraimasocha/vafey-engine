@@ -12,6 +12,10 @@ export const user = sqliteTable('user', {
   emailVerified: integer('email_verified', { mode: 'boolean' }).notNull().default(false),
   image: text('image'),
   role: text('role', { enum: userRoles }).notNull().default('student'),
+  // Better Auth admin plugin
+  banned: integer('banned', { mode: 'boolean' }).notNull().default(false),
+  banReason: text('ban_reason'),
+  banExpires: integer('ban_expires', { mode: 'timestamp_ms' }),
   ...timestamps,
 })
 
@@ -21,6 +25,7 @@ export const session = sqliteTable('session', {
   expiresAt: integer('expires_at', { mode: 'timestamp_ms' }).notNull(),
   ipAddress: text('ip_address'),
   userAgent: text('user_agent'),
+  impersonatedBy: text('impersonated_by'), // admin plugin
   userId: text('user_id')
     .notNull()
     .references(() => user.id, { onDelete: 'cascade' }),

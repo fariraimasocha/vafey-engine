@@ -1,11 +1,14 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "@fontsource-variable/bricolage-grotesque";
+@import "@fontsource-variable/eb-garamond";
+@import "@fontsource-variable/eb-garamond/wght-italic.css";
 
 @custom-variant dark (&:is(.dark *));
 
 /* Palette ported from fitmycv (warm paper + ink, terracotta accent).
-   Font: Bricolage Grotesque, as on zen-browser.app.
+   Fonts, after zen-browser.app: Bricolage Grotesque for UI, a Garamond serif for display
+   headings (zen uses Junicode; EB Garamond is the closest one on npm).
    ponytail: light theme only; add a .dark block when dark mode is needed. */
 :root {
   --radius: 0.5rem;
@@ -24,6 +27,9 @@
   --brand-soft: #f7ece7;
   --success: #3d8b5a;
   --success-soft: #eef8f1;
+  /* zen-browser dark panel */
+  --night: #1f1f1f;
+  --cream: #d1cfc0;
 
   /* shadcn tokens */
   --background: var(--surface);
@@ -57,6 +63,7 @@
 
 @theme inline {
   --font-sans: "Bricolage Grotesque Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "EB Garamond Variable", ui-serif, Georgia, serif;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -98,11 +105,67 @@
   --color-brand-soft: var(--brand-soft);
   --color-success: var(--success);
   --color-success-soft: var(--success-soft);
+  --color-night: var(--night);
+  --color-cream: var(--cream);
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+}
+
+/* Lesson content (editor now, student lesson view later). */
+@layer components {
+  .lesson-prose {
+    @apply text-[15px] leading-7 text-ink;
+  }
+  .lesson-prose > * + * {
+    @apply mt-3;
+  }
+  .lesson-prose h1 {
+    @apply mt-2 font-serif text-4xl font-medium tracking-tight;
+  }
+  .lesson-prose h2 {
+    @apply mt-6 font-serif text-3xl font-medium tracking-tight;
+  }
+  .lesson-prose h3 {
+    @apply mt-5 text-lg font-semibold;
+  }
+  .lesson-prose ul {
+    @apply list-disc ps-6;
+  }
+  .lesson-prose ol {
+    @apply list-decimal ps-6;
+  }
+  .lesson-prose li + li {
+    @apply mt-1;
+  }
+  .lesson-prose blockquote {
+    @apply border-s-2 border-brand ps-4 text-ink-soft italic;
+  }
+  .lesson-inline-code {
+    @apply rounded bg-paper px-1 py-0.5 font-mono text-[0.88em] text-brand-dark;
+  }
+  .lesson-code-block {
+    @apply block overflow-x-auto rounded-lg bg-night p-4 font-mono text-[13px] leading-6 whitespace-pre text-cream;
+  }
+  .lesson-link {
+    @apply text-brand-dark underline underline-offset-2;
+  }
+  .lesson-prose table {
+    @apply w-full border-collapse text-sm;
+  }
+  .lesson-prose td,
+  .lesson-prose th {
+    @apply border border-line px-3 py-2 text-start align-top;
+  }
+  .lesson-prose td > p,
+  .lesson-prose th > p {
+    @apply m-0;
+  }
+  .lesson-th {
+    @apply bg-paper font-semibold;
+  }
 }
 
 @layer base {

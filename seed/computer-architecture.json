@@ -1,0 +1,330 @@
+{
+  "title": "Computer Architecture",
+  "description": "How a computer really works, from bits and logic gates to processors, memory and parallel hardware. The foundation for writing fast, correct low-level code in C.",
+  "passMark": 60,
+  "status": "draft",
+  "modules": [
+    {
+      "title": "Foundations: Data and Logic",
+      "description": "How information is represented in binary and how logic gates compute with it.",
+      "topics": [
+        {
+          "title": "Data Representation",
+          "description": "Number systems, integers, floating point and text.",
+          "lessons": [
+            {
+              "title": "Binary, Hexadecimal and Integers",
+              "content": "# Binary, Hexadecimal and Integers\n\nComputers store everything as **bits**: 0 or 1. A group of 8 bits is a **byte**.\n\n## Positional number systems\n\nIn base 10, `523 = 5×10² + 2×10¹ + 3×10⁰`. Binary works the same way with base 2:\n\n`1011₂ = 1×2³ + 0×2² + 1×2¹ + 1×2⁰ = 11₁₀`\n\n**Hexadecimal** (base 16) uses digits `0–9` and `A–F`. One hex digit is exactly 4 bits, so it is a compact way to write binary: `1111 0010₂ = 0xF2`.\n\n## Unsigned integers\n\nAn *n*-bit unsigned integer holds values from `0` to `2ⁿ − 1`. An 8-bit `unsigned char` holds 0–255.\n\n## Signed integers: two's complement\n\nAlmost every modern CPU uses **two's complement** for signed integers. The most significant bit has a *negative* weight:\n\n`1111 1110₂ = −128 + 64 + 32 + 16 + 8 + 4 + 2 = −2`\n\nTo negate a number: invert all bits, then add 1.\n\n- 8-bit range: −128 to 127\n- There is only one zero, and addition works the same for signed and unsigned numbers.\n\n## Overflow\n\nIf a result does not fit in *n* bits, it wraps around. In C, unsigned overflow wraps by definition, but **signed overflow is undefined behaviour**. Always check ranges before arithmetic on untrusted input."
+            },
+            {
+              "title": "Floating Point and Characters",
+              "content": "# Floating Point and Characters\n\n## IEEE 754 floating point\n\nReal numbers are stored like scientific notation in binary: `value = (−1)^sign × 1.fraction × 2^(exponent − bias)`.\n\n| Format | Sign | Exponent | Fraction | Bias |\n|---|---|---|---|---|\n| `float` (32-bit) | 1 | 8 | 23 | 127 |\n| `double` (64-bit) | 1 | 11 | 52 | 1023 |\n\nKey consequences:\n\n- Most decimals **cannot be represented exactly**. `0.1 + 0.2 != 0.3` in C.\n- Compare floats with a tolerance: `fabs(a - b) < 1e-9`.\n- Special values exist: `+∞`, `−∞` and `NaN` (not a number).\n- Precision is relative: large numbers have big gaps between representable values.\n\n## Characters\n\nText is stored as numbers too.\n\n- **ASCII** maps 128 characters to 7-bit codes: `'A' = 65`, `'a' = 97`, `'0' = 48`.\n- **Unicode** assigns a code point to every character in every script. **UTF-8** encodes code points in 1–4 bytes and is backward compatible with ASCII.\n\nIn C, a `char` is just a small integer, so `'a' - 'A' == 32` and `'7' - '0' == 7`."
+            }
+          ]
+        },
+        {
+          "title": "Digital Logic",
+          "description": "Gates, combinational circuits and memory elements.",
+          "lessons": [
+            {
+              "title": "Logic Gates and Combinational Circuits",
+              "content": "# Logic Gates and Combinational Circuits\n\nA **logic gate** computes a Boolean function of its inputs.\n\n| Gate | Output is 1 when… | C operator |\n|---|---|---|\n| AND | all inputs are 1 | `&` |\n| OR | any input is 1 | `\\|` |\n| NOT | the input is 0 | `~` |\n| XOR | inputs differ | `^` |\n| NAND / NOR | inverted AND / OR | |\n\nNAND alone is **universal**: any circuit can be built from NAND gates.\n\n## Combinational circuits\n\nTheir output depends **only on the current inputs**, with no memory.\n\n- **Multiplexer (MUX):** a select signal chooses which input reaches the output.\n- **Decoder:** turns an *n*-bit code into one of 2ⁿ active lines, used to select memory rows.\n- **Half adder:** `sum = a XOR b`, `carry = a AND b`.\n- **Full adder:** adds `a`, `b` and a carry-in. Chaining *n* full adders gives an *n*-bit **ripple-carry adder**.\n\nThe **ALU** (arithmetic logic unit) is a large combinational circuit: adders, logic operations and a MUX that picks the result based on an operation code."
+            },
+            {
+              "title": "Sequential Logic, Clocks and Registers",
+              "content": "# Sequential Logic, Clocks and Registers\n\n**Sequential circuits** have memory: their output depends on inputs *and* stored state.\n\n## Flip-flops\n\nA **D flip-flop** stores one bit. On each rising clock edge it copies its input `D` to its output `Q` and holds it until the next edge.\n\n## The clock\n\nA **clock** is a signal that alternates 0/1 at a fixed rate. A 3 GHz clock ticks 3 billion times per second, so one cycle lasts about 0.33 ns.\n\nThe clock period must be long enough for signals to travel through the slowest combinational path, the **critical path**, between two flip-flops.\n\n## Registers\n\nA **register** is a row of flip-flops sharing a clock, for example 64 flip-flops for a 64-bit register. The CPU's **register file** holds a small set of very fast registers that instructions operate on.\n\n## State machines\n\nCombining registers (state) with combinational logic (next-state rules) gives a **finite state machine**. The CPU's control unit is one big state machine."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "The Processor",
+      "description": "Instruction sets, how the CPU executes instructions, and how pipelining makes it fast.",
+      "topics": [
+        {
+          "title": "Instruction Set Architecture",
+          "description": "The contract between software and hardware.",
+          "lessons": [
+            {
+              "title": "What an ISA Defines",
+              "content": "# What an ISA Defines\n\nThe **instruction set architecture (ISA)** is the interface between software and hardware. It defines:\n\n- the **instructions** (add, load, store, branch…)\n- the **registers** visible to programs\n- **data types** and sizes\n- **addressing modes**: how instructions find their operands\n- how memory is organised (byte addressing, endianness)\n\nExamples: x86-64 (most laptops and servers), ARM (phones, Apple Silicon), RISC-V (open standard).\n\n## Instruction types\n\n1. **Arithmetic/logic:** `add x1, x2, x3` (x1 = x2 + x3)\n2. **Data transfer:** `ld x1, 8(x2)` loads from memory address `x2 + 8`\n3. **Control flow:** `beq x1, x2, label` branches if equal\n\n## From C to machine code\n\nThe compiler turns `a = b + c;` into loads, an add and a store. Running `gcc -S file.c` shows the assembly it produces.\n\n## Endianness\n\n**Little-endian** machines (x86, most ARM) store the least significant byte at the lowest address. `0x12345678` is stored as `78 56 34 12`."
+            },
+            {
+              "title": "Addressing Modes and RISC vs CISC",
+              "content": "# Addressing Modes and RISC vs CISC\n\n## Addressing modes\n\n| Mode | Example | Operand is… |\n|---|---|---|\n| Immediate | `addi x1, x1, 5` | the constant 5 |\n| Register | `add x1, x2, x3` | a register value |\n| Base + offset | `ld x1, 16(x2)` | memory at `x2 + 16` |\n| PC-relative | `beq …, label` | an address relative to the program counter |\n\nBase + offset is how C accesses struct fields and array elements: `arr[i]` becomes base address + `i × sizeof(element)`.\n\n## RISC vs CISC\n\n**RISC** (Reduced Instruction Set Computer), for example ARM and RISC-V:\n- few, simple, fixed-length instructions\n- only loads and stores touch memory\n- easy to pipeline\n\n**CISC** (Complex Instruction Set Computer), for example x86:\n- many instructions, variable length\n- instructions can operate directly on memory\n- denser code\n\nModern x86 chips translate CISC instructions into RISC-like **micro-operations** internally, so the difference today is mostly at the interface."
+            }
+          ]
+        },
+        {
+          "title": "Datapath, Control and Pipelining",
+          "description": "The fetch-decode-execute cycle and overlapping instructions.",
+          "lessons": [
+            {
+              "title": "The Fetch-Decode-Execute Cycle",
+              "content": "# The Fetch-Decode-Execute Cycle\n\nThe CPU repeats one loop forever:\n\n1. **Fetch:** read the instruction at the address in the **program counter (PC)**.\n2. **Decode:** the control unit works out the operation and reads source registers.\n3. **Execute:** the ALU computes a result or a memory address.\n4. **Memory:** loads and stores access data memory.\n5. **Write back:** the result is written to the destination register.\n6. **Update PC:** go to the next instruction (`PC + 4`) or a branch target.\n\n## Datapath vs control\n\n- The **datapath** is the hardware that moves and transforms data: register file, ALU, memories, MUXes.\n- The **control unit** decodes each instruction and sets the control signals that steer the datapath, for example \"ALU do subtraction\" or \"write the result to a register\".\n\n## Performance equation\n\n`CPU time = instructions × CPI × clock period`\n\nwhere **CPI** is the average number of cycles per instruction. You can speed a program up by running fewer instructions (a better algorithm or compiler), lowering CPI (a better microarchitecture) or using a faster clock."
+            },
+            {
+              "title": "Pipelining and Hazards",
+              "content": "# Pipelining and Hazards\n\n**Pipelining** overlaps instructions like an assembly line. While one instruction executes, the next is decoded and the one after is fetched.\n\nWith 5 stages, ideally one instruction **completes every cycle** (CPI ≈ 1), even though each one still takes 5 cycles. Pipelining improves **throughput**, not the latency of a single instruction.\n\n## Hazards\n\nThings that stop the next instruction entering the pipeline:\n\n1. **Structural hazards:** two instructions need the same hardware at once.\n2. **Data hazards:** an instruction needs a result that is not ready yet.\n   ```\n   add x1, x2, x3\n   sub x4, x1, x5   # needs x1\n   ```\n   Fixed with **forwarding** (bypassing the result straight from the ALU) or **stalling** (inserting bubbles).\n3. **Control hazards:** after a branch, which instruction comes next? CPUs use **branch prediction** to guess and throw away work if the guess was wrong.\n\n## Why it matters to programmers\n\nUnpredictable branches inside hot loops are slow, because every misprediction can cost 10–20 cycles. Sorting data first, or writing branch-free code, can make loops much faster."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Memory Systems",
+      "description": "The memory hierarchy, caches and virtual memory.",
+      "topics": [
+        {
+          "title": "Memory Hierarchy and Caches",
+          "description": "Why locality makes programs fast.",
+          "lessons": [
+            {
+              "title": "The Memory Hierarchy and Locality",
+              "content": "# The Memory Hierarchy and Locality\n\nFast memory is small and expensive; big memory is slow. So computers use a **hierarchy**:\n\n| Level | Typical size | Typical latency |\n|---|---|---|\n| Registers | < 1 KB | < 1 ns |\n| L1 cache | 32–64 KB | ~1 ns |\n| L2 cache | 256 KB–2 MB | ~4 ns |\n| L3 cache | 8–64 MB | ~10–20 ns |\n| Main memory (DRAM) | GBs | ~80–100 ns |\n| SSD | 100s of GB | ~100 µs |\n\nA main-memory access can cost **hundreds of cycles**.\n\n## Locality\n\nCaches work because programs show **locality**:\n\n- **Temporal locality:** recently used data is likely to be used again soon, like loop variables.\n- **Spatial locality:** data near recently used data is likely to be used soon, like the next array element.\n\nCaches move data in **blocks** (cache lines), usually 64 bytes. Reading `a[0]` brings `a[1]…a[15]` (for 4-byte `int`s) along with it for free."
+            },
+            {
+              "title": "How Caches Work",
+              "content": "# How Caches Work\n\nAn address is split into **tag | index | offset**.\n\n- **Offset:** the byte within the cache line\n- **Index:** which cache set to look in\n- **Tag:** identifies which memory block is stored there\n\n## Mapping\n\n- **Direct-mapped:** each block can go in exactly one place. Simple, but suffers conflicts.\n- **Fully associative:** a block can go anywhere. Flexible, but expensive to search.\n- **Set-associative (N-way):** a block can go in any of N slots in one set. This is the common compromise.\n\n## Hits and misses\n\n- **Hit:** the data is in the cache, so it's fast.\n- **Miss:** fetch the line from the next level.\n  - *Compulsory:* first access to a line\n  - *Capacity:* the working set is bigger than the cache\n  - *Conflict:* too many blocks map to the same set\n\n**Average memory access time** = hit time + miss rate × miss penalty.\n\n## Writing cache-friendly C\n\nC stores 2D arrays **row by row**. This loop is fast because it walks memory in order:\n```c\nfor (i = 0; i < N; i++)\n  for (j = 0; j < N; j++)\n    sum += a[i][j];\n```\nSwapping the loops (`a[j][i]`) jumps a whole row on each access and can be many times slower."
+            }
+          ]
+        },
+        {
+          "title": "Virtual Memory",
+          "description": "Giving each process its own address space.",
+          "lessons": [
+            {
+              "title": "Address Spaces and Paging",
+              "content": "# Address Spaces and Paging\n\nEach process sees its own **virtual address space**, as if it had all the memory to itself. The hardware and the OS translate virtual addresses to **physical addresses**.\n\n## Why?\n\n- **Isolation:** one process cannot read or corrupt another's memory.\n- **Simplicity:** every program can be linked at the same addresses.\n- **Overcommit:** use disk as backing storage when RAM is full.\n\n## Paging\n\nMemory is split into fixed-size **pages** (commonly 4 KB). A virtual address is **virtual page number | page offset**.\n\nThe **page table** (one per process, managed by the OS) maps each virtual page to a physical **frame**, plus permission bits (read/write/execute, user/kernel, present).\n\n## Page faults\n\nIf a page is not present in RAM, the CPU raises a **page fault**. The OS loads the page from disk, updates the page table and resumes the program.\n\nAccessing an unmapped or forbidden address causes a fault the OS cannot fix, which in C is the familiar **segmentation fault**."
+            },
+            {
+              "title": "The TLB and Memory Protection",
+              "content": "# The TLB and Memory Protection\n\nPage tables live in memory, so translating every address naively would **double** the cost of each memory access.\n\n## Translation Lookaside Buffer (TLB)\n\nThe **TLB** is a small, fast cache of recent virtual→physical translations inside the CPU.\n\n- **TLB hit:** translation in about 1 cycle\n- **TLB miss:** walk the page table in memory (tens to hundreds of cycles), then cache the result\n\nPrograms with good locality also get good TLB hit rates. **Huge pages** (2 MB or 1 GB) let one TLB entry cover far more memory.\n\n## Protection\n\nPermission bits in each page table entry are enforced by hardware on every access:\n\n- Code pages: read + execute, **not writable**\n- Stack and heap: read + write, **not executable** (the NX bit), which blocks many injected-code attacks\n- Kernel pages: inaccessible from user mode\n\n## Context switches\n\nWhen the OS switches processes it points the CPU at the new page table. Old TLB entries must be flushed or tagged with an address-space ID, which is one reason context switches are not free."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "I/O and Parallelism",
+      "description": "Talking to devices, and using many cores at once.",
+      "topics": [
+        {
+          "title": "Input/Output",
+          "description": "How the CPU communicates with devices.",
+          "lessons": [
+            {
+              "title": "Polling and Interrupts",
+              "content": "# Polling and Interrupts\n\nDevices such as disks, network cards and keyboards are far slower than the CPU. How does the CPU learn that a device is ready?\n\n## Memory-mapped I/O\n\nDevice registers appear at special memory addresses. Writing to those addresses sends commands, and reading them gets status and data.\n\n## Polling\n\nThe CPU repeatedly checks a status register:\n```c\nwhile (!(DEVICE_STATUS & READY)) { }\nvalue = DEVICE_DATA;\n```\nPolling is simple and has low latency, but it **wastes CPU time** spinning when the device is slow.\n\n## Interrupts\n\nThe device signals the CPU when it needs attention. The CPU:\n\n1. finishes the current instruction\n2. saves the state (PC, registers)\n3. jumps to an **interrupt handler** in the OS\n4. handles the event, restores the state and resumes\n\nInterrupts let the CPU do useful work while waiting. Timer interrupts also let the OS preempt programs for multitasking."
+            },
+            {
+              "title": "Direct Memory Access (DMA)",
+              "content": "# Direct Memory Access (DMA)\n\nWith only interrupts, the CPU would still have to copy every byte between a device and memory. For a disk or network card moving gigabytes, that is a huge waste.\n\n## DMA\n\nA **DMA controller** moves data between devices and memory **without the CPU**:\n\n1. The CPU tells the DMA controller the source, the destination and the length.\n2. The DMA engine transfers the whole block over the memory bus.\n3. It raises **one interrupt** when the transfer is done.\n\nThe CPU is free to run other programs during the transfer.\n\n## Trade-offs\n\n| Method | CPU cost | Best for |\n|---|---|---|\n| Polling | High | Very fast devices, very low latency |\n| Interrupts | Per event | Keyboards, occasional events |\n| DMA | Per block | Disks, network, GPUs, bulk data |\n\n## Caches and DMA\n\nDMA writes memory directly, so cached copies can become **stale**. Hardware or the OS must keep caches coherent with DMA transfers, for example by invalidating cache lines after a transfer completes."
+            }
+          ]
+        },
+        {
+          "title": "Parallel Hardware",
+          "description": "Multicore processors and their limits.",
+          "lessons": [
+            {
+              "title": "Multicore and Amdahl's Law",
+              "content": "# Multicore and Amdahl's Law\n\nAround 2005, raising clock speeds hit a **power wall**: faster clocks meant too much heat. Chip makers put **multiple cores** on one chip instead.\n\n## Kinds of parallelism\n\n- **Instruction-level:** pipelining, superscalar execution (several instructions per cycle), out-of-order execution\n- **Data-level (SIMD):** one instruction works on many values (SSE/AVX, NEON), as GPUs do at large scale\n- **Thread-level:** multiple cores run separate threads\n\nOnly thread-level parallelism needs the programmer to explicitly split the work, for example with POSIX threads in C.\n\n## Amdahl's Law\n\nIf a fraction *P* of a program can run in parallel on *N* cores:\n\n`speedup = 1 / ((1 − P) + P / N)`\n\nExample: with P = 0.9 and N = 8, speedup = 1 / (0.1 + 0.1125) ≈ **4.7×**, not 8×. Even with infinite cores the limit is 1 / 0.1 = **10×**.\n\nThe serial part always limits how much faster parallelism can make a program."
+            },
+            {
+              "title": "Cache Coherence and Synchronisation",
+              "content": "# Cache Coherence and Synchronisation\n\nEach core has its own caches. If two cores cache the same address and one writes to it, the other core's copy becomes stale.\n\n## Cache coherence\n\nHardware **coherence protocols** keep caches consistent. **MESI** tracks each line as:\n\n- **M**odified: only this cache has it, and it is dirty\n- **E**xclusive: only this cache has it, and it is clean\n- **S**hared: several caches have clean copies\n- **I**nvalid: not usable\n\nWriting to a Shared line first **invalidates** the other cores' copies.\n\n## False sharing\n\nTwo threads updating *different* variables that sit in the *same* 64-byte cache line force that line to bounce between cores. The program is correct but slow. The fix is to pad or align per-thread data to separate cache lines.\n\n## Races and synchronisation\n\nCoherence does not make `count++` safe. It is a read, an add and a write, and two threads can interleave those steps. Protect shared data with:\n\n- **mutexes** (`pthread_mutex_lock`)\n- **atomic operations** (`atomic_fetch_add` in C11), built on hardware instructions such as compare-and-swap"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "assessment": {
+    "title": "Computer Architecture: Final Assessment",
+    "instructions": "20 multiple-choice questions covering the whole course. Choose the single best answer for each. You need 60% to pass.",
+    "questions": [
+      {
+        "prompt": "What is the decimal value of the binary number 1011?",
+        "options": [
+          { "text": "9", "isCorrect": false },
+          { "text": "11", "isCorrect": true },
+          { "text": "13", "isCorrect": false },
+          { "text": "1011", "isCorrect": false }
+        ]
+      },
+      {
+        "prompt": "In 8-bit two's complement, what does 1111 1110 represent?",
+        "options": [
+          { "text": "254", "isCorrect": false },
+          { "text": "-1", "isCorrect": false },
+          { "text": "-2", "isCorrect": true },
+          { "text": "-126", "isCorrect": false }
+        ]
+      },
+      {
+        "prompt": "How many bits does one hexadecimal digit represent?",
+        "options": [
+          { "text": "2", "isCorrect": false },
+          { "text": "4", "isCorrect": true },
+          { "text": "8", "isCorrect": false },
+          { "text": "16", "isCorrect": false }
+        ]
+      },
+      {
+        "prompt": "Why does 0.1 + 0.2 == 0.3 evaluate to false in C?",
+        "options": [
+          { "text": "C rounds all floats to integers", "isCorrect": false },
+          { "text": "0.1 and 0.2 cannot be represented exactly in binary floating point", "isCorrect": true },
+          { "text": "The == operator does not work on doubles", "isCorrect": false },
+          { "text": "Floating point addition is not supported by hardware", "isCorrect": false }
+        ]
+      },
+      {
+        "prompt": "Which gate outputs 1 only when its two inputs are different?",
+        "options": [
+          { "text": "AND", "isCorrect": false },
+          { "text": "OR", "isCorrect": false },
+          { "text": "XOR", "isCorrect": true },
+          { "text": "NAND", "isCorrect": false }
+        ]
+      },
+      {
+        "prompt": "What distinguishes a sequential circuit from a combinational circuit?",
+        "options": [
+          { "text": "It uses more gates", "isCorrect": false },
+          { "text": "Its output depends on stored state as well as current inputs", "isCorrect": true },
+          { "text": "It cannot use a clock", "isCorrect": false },
+          { "text": "It only uses NAND gates", "isCorrect": false }
+        ]
+      },
+      {
+        "prompt": "What does the clock's critical path determine?",
+        "options": [
+          { "text": "The number of registers in the CPU", "isCorrect": false },
+          { "text": "The minimum clock period (and so the maximum clock frequency)", "isCorrect": true },
+          { "text": "The size of the L1 cache", "isCorrect": false },
+          { "text": "The number of cores", "isCorrect": false }
+        ]
+      },
+      {
+        "prompt": "What is an Instruction Set Architecture (ISA)?",
+        "options": [
+          { "text": "The physical layout of transistors on the chip", "isCorrect": false },
+          { "text": "The interface between software and hardware: instructions, registers and addressing", "isCorrect": true },
+          { "text": "The operating system's system call list", "isCorrect": false },
+          { "text": "A programming language for hardware", "isCorrect": false }
+        ]
+      },
+      {
+        "prompt": "On a little-endian machine, how is the 32-bit value 0x12345678 stored in memory (lowest address first)?",
+        "options": [
+          { "text": "12 34 56 78", "isCorrect": false },
+          { "text": "78 56 34 12", "isCorrect": true },
+          { "text": "56 78 12 34", "isCorrect": false },
+          { "text": "87 65 43 21", "isCorrect": false }
+        ]
+      },
+      {
+        "prompt": "Which is a characteristic of RISC architectures?",
+        "options": [
+          { "text": "Variable-length, complex instructions", "isCorrect": false },
+          { "text": "Arithmetic instructions operate directly on memory", "isCorrect": false },
+          { "text": "Simple fixed-length instructions; only loads and stores access memory", "isCorrect": true },
+          { "text": "No registers", "isCorrect": false }
+        ]
+      },
+      {
+        "prompt": "Which register holds the address of the next instruction to fetch?",
+        "options": [
+          { "text": "Stack pointer", "isCorrect": false },
+          { "text": "Program counter", "isCorrect": true },
+          { "text": "Accumulator", "isCorrect": false },
+          { "text": "Status register", "isCorrect": false }
+        ]
+      },
+      {
+        "prompt": "What does pipelining mainly improve?",
+        "options": [
+          { "text": "The latency of a single instruction", "isCorrect": false },
+          { "text": "Instruction throughput", "isCorrect": true },
+          { "text": "The size of main memory", "isCorrect": false },
+          { "text": "The number of registers", "isCorrect": false }
+        ]
+      },
+      {
+        "prompt": "An instruction needs a register value that the previous instruction has not written yet. What kind of hazard is this?",
+        "options": [
+          { "text": "Structural hazard", "isCorrect": false },
+          { "text": "Data hazard", "isCorrect": true },
+          { "text": "Control hazard", "isCorrect": false },
+          { "text": "Page fault", "isCorrect": false }
+        ]
+      },
+      {
+        "prompt": "A loop reads array elements a[0], a[1], a[2]… in order. Which property makes this cache-friendly?",
+        "options": [
+          { "text": "Temporal locality", "isCorrect": false },
+          { "text": "Spatial locality", "isCorrect": true },
+          { "text": "Branch prediction", "isCorrect": false },
+          { "text": "False sharing", "isCorrect": false }
+        ]
+      },
+      {
+        "prompt": "In a set-associative cache, which part of the address selects the set?",
+        "options": [
+          { "text": "Tag", "isCorrect": false },
+          { "text": "Index", "isCorrect": true },
+          { "text": "Offset", "isCorrect": false },
+          { "text": "Page number", "isCorrect": false }
+        ]
+      },
+      {
+        "prompt": "What is the main purpose of the TLB?",
+        "options": [
+          { "text": "To cache recent virtual-to-physical address translations", "isCorrect": true },
+          { "text": "To store the program's instructions", "isCorrect": false },
+          { "text": "To predict branch outcomes", "isCorrect": false },
+          { "text": "To transfer data between devices and memory", "isCorrect": false }
+        ]
+      },
+      {
+        "prompt": "A C program dereferences an address that is not mapped in its address space. What usually happens?",
+        "options": [
+          { "text": "The value 0 is returned", "isCorrect": false },
+          { "text": "The OS loads the page from disk and continues", "isCorrect": false },
+          { "text": "The program is terminated with a segmentation fault", "isCorrect": true },
+          { "text": "The CPU ignores the instruction", "isCorrect": false }
+        ]
+      },
+      {
+        "prompt": "Which I/O technique lets a device copy a large block of data into memory without the CPU copying each byte?",
+        "options": [
+          { "text": "Polling", "isCorrect": false },
+          { "text": "Direct Memory Access (DMA)", "isCorrect": true },
+          { "text": "Branch prediction", "isCorrect": false },
+          { "text": "Paging", "isCorrect": false }
+        ]
+      },
+      {
+        "prompt": "Using Amdahl's Law, a program that is 90% parallel runs on 8 cores. What is the approximate speedup?",
+        "options": [
+          { "text": "8×", "isCorrect": false },
+          { "text": "7.2×", "isCorrect": false },
+          { "text": "4.7×", "isCorrect": true },
+          { "text": "10×", "isCorrect": false }
+        ]
+      },
+      {
+        "prompt": "Two threads update different variables that sit in the same cache line, and performance drops. What is this called?",
+        "options": [
+          { "text": "A data race", "isCorrect": false },
+          { "text": "False sharing", "isCorrect": true },
+          { "text": "A TLB miss", "isCorrect": false },
+          { "text": "A structural hazard", "isCorrect": false }
+        ]
+      }
+    ]
+  }
+}
