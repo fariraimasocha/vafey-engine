@@ -96,9 +96,10 @@ Rules:
   the build. Put those helpers in `*.service.ts` and only call them inside handlers.
 - Data fetching: define `queryOptions` in `src/hooks/use-<domain>.ts`, prefetch them in the route `loader`
   (`context.queryClient`), and read them with `useSuspenseQuery`. Use the Spiral loader as the Suspense fallback.
-- Auth: the first account to sign up becomes `admin` and every later one is `student`
-  (hook in `lib/auth.ts`). The `/_dashboard` layout redirects signed-out users to `/sign-in` and shows
-  "admins only" to students.
+- Auth: **every sign-up is a `student`**. Sign-up rejects a `role` field. Only admins create admins:
+  "Add user" with role Admin, or "Make admin" on a person's page. To bootstrap the first admin of a fresh
+  database, sign up and then run `npm run make-admin -- <email>` (add `--local` for the dev DB).
+  The `/_dashboard` layout redirects signed-out users to `/sign-in` and shows "admins only" to students.
 - User management uses the Better Auth **admin plugin** (roles `admin` and `student`) for create, set role,
   suspend (ban), set password and delete. Call it through `server/students/students.service.ts`
   (`auth.api.*`), never by writing to the user table directly. Admins can't demote, suspend or delete themselves.

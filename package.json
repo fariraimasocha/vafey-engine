@@ -18,7 +18,8 @@
     "db:migrate:remote": "cf d1 migrations apply 331637db-c8ac-473f-8322-2427ebe54ed5 --dir drizzle",
     "db:studio": "drizzle-kit studio",
     "seed": "node scripts/seed.mjs",
-    "check:markdown": "node scripts/check-markdown.ts"
+    "check:markdown": "node scripts/check-markdown.ts",
+    "make-admin": "node scripts/make-admin.mjs"
   },
   "dependencies": {
     "@fontsource-variable/bricolage-grotesque": "^5.3.0",

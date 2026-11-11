@@ -12,20 +12,9 @@ export const auth = betterAuth({
   baseURL: env.BETTER_AUTH_URL,
   database: drizzleAdapter(db, { provider: 'sqlite', schema }),
   emailAndPassword: { enabled: true },
-  databaseHooks: {
-    user: {
-      create: {
-        // Bootstrap: the very first account becomes admin. After that, sign-ups are students
-        // (the admin plugin strips `role` from sign-up input) and admins can pick a role when creating users.
-        // ponytail: count-then-insert can race if two people sign up in the same instant on an empty DB.
-        before: async (user) => {
-          const first = await db.select({ id: schema.user.id }).from(schema.user).limit(1)
-          return { data: { ...user, role: first.length ? (user.role ?? 'student') : 'admin' } }
-        },
-      },
-    },
-  },
   plugins: [
+    // Every sign-up is a student (sign-up rejects a `role` field). Only admins create admins:
+    // "Add user" with role Admin, or "Make admin" on a student. Bootstrap a fresh DB with scripts/make-admin.mjs.
     // User management: create, set role, ban, set password, revoke sessions, remove.
     admin({
       defaultRole: 'student',
