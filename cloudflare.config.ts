@@ -4,7 +4,7 @@ export default defineConfig({
   accountId: '4b0774f7fcd2db73dbe26b3904dc632e',
   worker: {
     name: 'vafey-engine',
-    entrypoint: '@tanstack/react-start/server-entry',
+    entrypoint: './src/server.ts',
     compatibilityDate: '2026-11-11',
     compatibilityFlags: ['nodejs_compat'],
     observability: { enabled: true },

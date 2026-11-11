@@ -105,6 +105,12 @@ Rules:
   (`auth.api.*`), never by writing to the user table directly. Admins can't demote, suspend or delete themselves.
 - Enrollment rules (enroll, override status, reset progress, unenroll) live in
   `server/enrollments/enrollments.service.ts`. The student app will reuse them.
+- Security baseline (keep it):
+  - `src/server.ts` wraps the Worker and adds CSP, X-Frame-Options, nosniff, Referrer-Policy,
+    Permissions-Policy and HSTS to every response. New third-party scripts, fonts or APIs must be added to the CSP.
+  - `getSession` returns only `{ user: { id, name, email, image, role } }`. Never return the session token to the client.
+  - Better Auth rate limiting is on, stored in D1, and keyed by `cf-connecting-ip`.
+  - Production error screens show a generic message; details only appear in dev.
 - D1 gotcha: `db.batch()` returns rows keyed by column name, so selecting two columns with the same name
   (e.g. `enrollment.id` and `course.id` in a join) silently shifts values. Use `Promise.all` for reads like
   that. Keep `db.batch` for atomic writes and reads with unique column names.

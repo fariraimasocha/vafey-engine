@@ -56,3 +56,12 @@ export const verification = sqliteTable('verification', {
   expiresAt: integer('expires_at', { mode: 'timestamp_ms' }).notNull(),
   ...timestamps,
 })
+
+// Better Auth rate limiting, stored in D1 so limits hold across every Worker instance
+// (in-memory counters are per-isolate on Workers).
+export const rateLimit = sqliteTable('rate_limit', {
+  id: text('id').primaryKey(),
+  key: text('key').notNull().unique(),
+  count: integer('count').notNull(),
+  lastRequest: integer('last_request').notNull(),
+})
