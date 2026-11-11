@@ -1,5 +1,6 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
 import { Suspense } from 'react'
+import { CourseCover } from '@/components/courses/course-cover'
 import { PhArrowLeft } from '@/components/icons/ph/arrow-left'
 import { PhArrowRight } from '@/components/icons/ph/arrow-right'
 import { PhCheckCircleFill } from '@/components/icons/ph/check-circle-fill'
@@ -37,6 +38,9 @@ function CourseOverview() {
       </Link>
 
       <header className="mt-5">
+        {c.imageKey && (
+          <CourseCover title={c.title} imageKey={c.imageKey} className="mb-6 aspect-[3/1] max-h-64 rounded-xl" />
+        )}
         <div className="flex items-center gap-2">
           <StatusBadge status={c.status} />
           <span className="text-sm text-ink-faint">Pass mark {c.passMark}%</span>

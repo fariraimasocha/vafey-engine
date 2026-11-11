@@ -1,5 +1,6 @@
 import { Link, createFileRoute, useNavigate } from '@tanstack/react-router'
 import { Suspense } from 'react'
+import { CourseCover } from '@/components/courses/course-cover'
 import { PhArrowRight } from '@/components/icons/ph/arrow-right'
 import { ProgressBar } from '@/components/learn/progress-bar'
 import { LearnError } from '@/components/learn/learn-error'
@@ -21,13 +22,8 @@ export const Route = createFileRoute('/_learn/learn/')({
   ),
 })
 
-function Cover({ title }: { title: string }) {
-  return (
-    <div className="relative mb-4 grid h-32 place-items-center overflow-hidden rounded-[18px] bg-night">
-      <span className="font-serif text-5xl text-cream">{title.charAt(0)}</span>
-      <span aria-hidden className="absolute -right-10 -bottom-10 size-32 rounded-full border border-brand/40" />
-    </div>
-  )
+function Cover({ title, imageKey }: { title: string; imageKey: string | null }) {
+  return <CourseCover title={title} imageKey={imageKey} className="mb-4 h-32 rounded-[18px]" />
 }
 
 function MyLearning() {
@@ -52,7 +48,7 @@ function MyLearning() {
             {data.enrolled.map((c) => (
               <Link key={c.courseId} to="/learn/$courseId" params={{ courseId: c.courseId }} className="rounded-[24px]">
                 <MinimalCard className="h-full bg-white hover:bg-paper-soft">
-                  <Cover title={c.title} />
+                  <Cover title={c.title} imageKey={c.imageKey} />
                   <div className="flex items-center gap-2 px-1">
                     <StatusBadge status={c.status} />
                     {c.bestScore !== null && <span className="text-xs text-ink-faint">Best score {c.bestScore}%</span>}
@@ -86,7 +82,7 @@ function MyLearning() {
           <div className="mt-5 grid gap-5 sm:grid-cols-2">
             {data.available.map((c) => (
               <MinimalCard key={c.courseId} className="bg-white">
-                <Cover title={c.title} />
+                <Cover title={c.title} imageKey={c.imageKey} />
                 <MinimalCardTitle className="text-ink">{c.title}</MinimalCardTitle>
                 <MinimalCardDescription className="mb-1 line-clamp-3 pb-0 text-ink-soft">{c.description}</MinimalCardDescription>
                 <div className="flex items-center justify-between gap-3 px-1 pt-3 pb-2">

@@ -12,6 +12,7 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar'
 import { useMyLearning } from '@/hooks/use-learn'
+import { imageUrl } from '@/lib/utils'
 
 export function LearnSidebar({ isAdmin }: { isAdmin: boolean }) {
   const items: NavItem[] = [
@@ -53,13 +54,17 @@ function MyCourses() {
                   params={{ courseId: c.courseId }}
                   onClick={() => isMobile && setOpenMobile(false)}
                 >
-                  {/* Initial on the night tile, like the course covers. Also the icon when collapsed. */}
-                  <span
-                    aria-hidden
-                    className="grid size-5 shrink-0 place-items-center rounded bg-night font-serif text-[11px] text-cream"
-                  >
-                    {c.title.charAt(0)}
-                  </span>
+                  {/* Cover thumbnail, or the initial on the night tile. Also the icon when collapsed. */}
+                  {c.imageKey ? (
+                    <img src={imageUrl(c.imageKey)} alt="" className="size-5 shrink-0 rounded object-cover" />
+                  ) : (
+                    <span
+                      aria-hidden
+                      className="grid size-5 shrink-0 place-items-center rounded bg-night font-serif text-[11px] text-cream"
+                    >
+                      {c.title.charAt(0)}
+                    </span>
+                  )}
                   <span className="min-w-0 flex-1 truncate">{c.title}</span>
                   <span
                     className={`text-xs tabular-nums ${c.status === 'passed' ? 'text-success' : 'text-ink-faint'}`}

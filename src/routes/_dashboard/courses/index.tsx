@@ -1,5 +1,6 @@
 import { Link, createFileRoute, useNavigate } from '@tanstack/react-router'
 import { Suspense, useState } from 'react'
+import { CourseCover } from '@/components/courses/course-cover'
 import { CourseFormDialog } from '@/components/courses/course-form-dialog'
 import { PhBookOpen } from '@/components/icons/ph/book-open'
 import { PhDotsThree } from '@/components/icons/ph/dots-three'
@@ -84,14 +85,7 @@ function CourseGrid() {
             className="block h-full rounded-[24px] focus-visible:outline-2"
           >
             <MinimalCard className="h-full bg-paper-soft hover:bg-paper">
-              {/* Cover: course initial on the zen night panel until course images land. */}
-              <div className="relative mb-4 grid h-36 place-items-center overflow-hidden rounded-[18px] bg-night">
-                <span className="font-serif text-6xl text-cream">{c.title.charAt(0)}</span>
-                <span
-                  aria-hidden
-                  className="absolute -right-10 -bottom-10 size-32 rounded-full border border-brand/40"
-                />
-              </div>
+              <CourseCover title={c.title} imageKey={c.imageKey} className="mb-4 h-36 rounded-[18px]" />
               <div className="flex items-center gap-2 px-1">
                 <Badge
                   variant="outline"

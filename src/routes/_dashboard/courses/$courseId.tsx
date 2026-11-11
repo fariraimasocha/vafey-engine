@@ -3,6 +3,7 @@ import { Suspense } from 'react'
 import { AssessmentEditor } from '@/components/courses/assessment-editor'
 import { ContentTree } from '@/components/courses/content-tree'
 import { CourseFormDialog } from '@/components/courses/course-form-dialog'
+import { CourseImageUploader } from '@/components/courses/course-image-uploader'
 import { PhArrowLeft } from '@/components/icons/ph/arrow-left'
 import { Spiral } from '@/components/loading-ui/spiral'
 import { Badge } from '@/components/ui/badge'
@@ -43,7 +44,11 @@ function CourseBuilder() {
         <PhArrowLeft className="size-4" /> All courses
       </Link>
 
-      <div className="mt-4 flex flex-wrap items-start justify-between gap-4">
+      <div className="mt-4">
+        <CourseImageUploader courseId={course.id} title={course.title} imageKey={course.imageKey} />
+      </div>
+
+      <div className="mt-6 flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
           <div className="flex items-center gap-2">
             <Badge
@@ -85,8 +90,9 @@ function CourseBuilder() {
             className="text-ink-soft hover:text-destructive"
             onClick={async () => {
               if (!confirm(`Delete "${course.title}" with all its content and enrolments? This can't be undone.`)) return
-              await remove.mutateAsync({ id: course.id })
+              // Leave first: refreshing this page's (now deleted) course after the delete would fail and retry.
               await navigate({ to: '/courses' })
+              remove.mutate({ id: course.id })
             }}
           >
             Delete

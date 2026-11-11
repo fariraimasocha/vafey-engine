@@ -65,6 +65,7 @@ export async function getMyLearning(userId: string) {
       courseId: course.id,
       title: course.title,
       description: course.description,
+      imageKey: course.imageKey,
       passMark: course.passMark,
       status: enrollment.status,
       enrolledAt: enrollment.createdAt,
@@ -83,6 +84,7 @@ export async function getMyLearning(userId: string) {
       courseId: course.id,
       title: course.title,
       description: course.description,
+      imageKey: course.imageKey,
       passMark: course.passMark,
       totalLessons: sql<number>`(${lessonsPerCourse})`,
     })
@@ -116,6 +118,7 @@ export async function getCourseForStudent(userId: string, courseId: string) {
     id: tree.id,
     title: tree.title,
     description: tree.description,
+    imageKey: tree.imageKey,
     passMark: tree.passMark,
     status: enr.status,
     totalLessons: lessons.length,

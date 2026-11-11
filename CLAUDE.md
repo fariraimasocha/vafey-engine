@@ -35,7 +35,13 @@ Don't build scaffolding for these. Keep the data model open to them, but nothing
 - Framework: TanStack Start (React 19, TanStack Router, Vite), Tailwind v4
 - Runtime: Cloudflare Workers, configured in `cloudflare.config.ts` (use the `cf` CLI, not Wrangler)
 - Database: Cloudflare D1 (`vafey-engine`) via Drizzle ORM. The binding is `env.DB`
-- File storage: Cloudflare R2 (`vafey-engine` bucket) for course images. The binding is `env.BUCKET`; the S3 creds are in `.env`
+- File storage: Cloudflare R2 (`vafey-engine` bucket) for course cover images. The binding is `env.BUCKET`; the S3 creds are in `.env`.
+  - Upload/remove: `POST|DELETE /api/admin/courses/:courseId/image` (admin only, multipart field `file`). Only PNG, JPEG
+    and WebP up to 5 MB, detected from the file's bytes (never trust the client MIME type). SVG is never allowed.
+  - Serve: `GET /api/images/<key>`, public and read-only, limited to the `courses/` prefix. Keys are unique per
+    upload, so responses are cached as immutable.
+  - Old objects are deleted when an image is replaced or removed, and when a course is deleted (`lib/r2.ts`,
+    `courses.service.ts`). Render covers with `components/courses/course-cover.tsx`; build URLs with `imageUrl()` from `lib/utils`.
 - Auth: Better Auth (email + password) with a `role` field on the user: `admin` | `student` (default)
 - Validation: zod
 - Charts: TanStack Charts (`@tanstack/charts`, React adapter `@tanstack/charts/react`), styled like the shadcn

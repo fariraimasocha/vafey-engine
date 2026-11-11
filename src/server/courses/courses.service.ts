@@ -3,6 +3,7 @@
 import { asc, count, eq, max, sql } from 'drizzle-orm'
 import type { BatchItem } from 'drizzle-orm/batch'
 import { db, schema } from '#/db'
+import { deleteObject, putCourseImage, sniffImageType, MAX_IMAGE_BYTES } from '#/lib/r2'
 import type { AssessmentInput, CourseImport } from './courses.schema'
 
 const { course, module, topic, lesson, assessment, question, questionOption, enrollment } = schema
@@ -94,7 +95,33 @@ export async function updateCourse({ id, ...patch }: { id: string } & Partial<ty
 }
 
 export async function deleteCourse(id: string) {
-  await db.delete(course).where(eq(course.id, id))
+  const [row] = await db.delete(course).where(eq(course.id, id)).returning({ imageKey: course.imageKey })
+  await deleteObject(row?.imageKey)
+}
+
+// ---------- cover image (R2) ----------
+
+/** Validates and stores a cover image, replacing (and deleting) any previous one. Returns the new key. */
+export async function setCourseImage(courseId: string, file: File) {
+  if (file.size > MAX_IMAGE_BYTES) throw new Error('Image must be 5 MB or smaller')
+  const bytes = new Uint8Array(await file.arrayBuffer())
+  const type = sniffImageType(bytes)
+  if (!type) throw new Error('Use a PNG, JPEG or WebP image')
+
+  const [existing] = await db.select({ imageKey: course.imageKey }).from(course).where(eq(course.id, courseId))
+  if (!existing) throw new Error('Course not found')
+
+  const key = await putCourseImage(courseId, bytes, type)
+  await db.update(course).set({ imageKey: key }).where(eq(course.id, courseId))
+  await deleteObject(existing.imageKey) // after the DB points at the new image
+  return key
+}
+
+export async function removeCourseImage(courseId: string) {
+  const [existing] = await db.select({ imageKey: course.imageKey }).from(course).where(eq(course.id, courseId))
+  if (!existing) throw new Error('Course not found')
+  await db.update(course).set({ imageKey: null }).where(eq(course.id, courseId))
+  await deleteObject(existing.imageKey)
 }
 
 // ---------- modules / topics / lessons ----------

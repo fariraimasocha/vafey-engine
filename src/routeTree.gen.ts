@@ -21,10 +21,12 @@ import { Route as DashboardStudentsIndexRouteImport } from './routes/_dashboard/
 import { Route as DashboardStudentsUserIdRouteImport } from './routes/_dashboard/students/$userId'
 import { Route as LearnLearnIndexRouteImport } from './routes/_learn/learn/index'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as ApiImagesSplatRouteImport } from './routes/api/images/$'
 import { Route as LearnLearnCourseIdIndexRouteImport } from './routes/_learn/learn/$courseId/index'
 import { Route as LearnLearnCourseIdAssessmentRouteImport } from './routes/_learn/learn/$courseId/assessment'
 import { Route as ApiAdminCoursesImportRouteImport } from './routes/api/admin/courses/import'
 import { Route as LearnLearnCourseIdLessonsLessonIdRouteImport } from './routes/_learn/learn/$courseId/lessons/$lessonId'
+import { Route as ApiAdminCoursesCourseIdImageRouteImport } from './routes/api/admin/courses/$courseId/image'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/_auth',
@@ -84,6 +86,11 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiImagesSplatRoute = ApiImagesSplatRouteImport.update({
+  id: '/api/images/$',
+  path: '/api/images/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LearnLearnCourseIdIndexRoute = LearnLearnCourseIdIndexRouteImport.update({
   id: '/learn/$courseId/',
   path: '/learn/$courseId/',
@@ -106,6 +113,12 @@ const LearnLearnCourseIdLessonsLessonIdRoute =
     path: '/learn/$courseId/lessons/$lessonId',
     getParentRoute: () => LearnRoute,
   } as any)
+const ApiAdminCoursesCourseIdImageRoute =
+  ApiAdminCoursesCourseIdImageRouteImport.update({
+    id: '/api/admin/courses/$courseId/image',
+    path: '/api/admin/courses/$courseId/image',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof DashboardIndexRoute
@@ -114,6 +127,7 @@ export interface FileRoutesByFullPath {
   '/courses/$courseId': typeof DashboardCoursesCourseIdRoute
   '/students/$userId': typeof DashboardStudentsUserIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/images/$': typeof ApiImagesSplatRoute
   '/courses/': typeof DashboardCoursesIndexRoute
   '/students/': typeof DashboardStudentsIndexRoute
   '/learn/': typeof LearnLearnIndexRoute
@@ -121,6 +135,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/courses/import': typeof ApiAdminCoursesImportRoute
   '/learn/$courseId/': typeof LearnLearnCourseIdIndexRoute
   '/learn/$courseId/lessons/$lessonId': typeof LearnLearnCourseIdLessonsLessonIdRoute
+  '/api/admin/courses/$courseId/image': typeof ApiAdminCoursesCourseIdImageRoute
 }
 export interface FileRoutesByTo {
   '/': typeof DashboardIndexRoute
@@ -129,6 +144,7 @@ export interface FileRoutesByTo {
   '/courses/$courseId': typeof DashboardCoursesCourseIdRoute
   '/students/$userId': typeof DashboardStudentsUserIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/images/$': typeof ApiImagesSplatRoute
   '/courses': typeof DashboardCoursesIndexRoute
   '/students': typeof DashboardStudentsIndexRoute
   '/learn': typeof LearnLearnIndexRoute
@@ -136,6 +152,7 @@ export interface FileRoutesByTo {
   '/api/admin/courses/import': typeof ApiAdminCoursesImportRoute
   '/learn/$courseId': typeof LearnLearnCourseIdIndexRoute
   '/learn/$courseId/lessons/$lessonId': typeof LearnLearnCourseIdLessonsLessonIdRoute
+  '/api/admin/courses/$courseId/image': typeof ApiAdminCoursesCourseIdImageRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -148,6 +165,7 @@ export interface FileRoutesById {
   '/_dashboard/courses/$courseId': typeof DashboardCoursesCourseIdRoute
   '/_dashboard/students/$userId': typeof DashboardStudentsUserIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/images/$': typeof ApiImagesSplatRoute
   '/_dashboard/courses/': typeof DashboardCoursesIndexRoute
   '/_dashboard/students/': typeof DashboardStudentsIndexRoute
   '/_learn/learn/': typeof LearnLearnIndexRoute
@@ -155,6 +173,7 @@ export interface FileRoutesById {
   '/api/admin/courses/import': typeof ApiAdminCoursesImportRoute
   '/_learn/learn/$courseId/': typeof LearnLearnCourseIdIndexRoute
   '/_learn/learn/$courseId/lessons/$lessonId': typeof LearnLearnCourseIdLessonsLessonIdRoute
+  '/api/admin/courses/$courseId/image': typeof ApiAdminCoursesCourseIdImageRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -165,6 +184,7 @@ export interface FileRouteTypes {
     | '/courses/$courseId'
     | '/students/$userId'
     | '/api/auth/$'
+    | '/api/images/$'
     | '/courses/'
     | '/students/'
     | '/learn/'
@@ -172,6 +192,7 @@ export interface FileRouteTypes {
     | '/api/admin/courses/import'
     | '/learn/$courseId/'
     | '/learn/$courseId/lessons/$lessonId'
+    | '/api/admin/courses/$courseId/image'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -180,6 +201,7 @@ export interface FileRouteTypes {
     | '/courses/$courseId'
     | '/students/$userId'
     | '/api/auth/$'
+    | '/api/images/$'
     | '/courses'
     | '/students'
     | '/learn'
@@ -187,6 +209,7 @@ export interface FileRouteTypes {
     | '/api/admin/courses/import'
     | '/learn/$courseId'
     | '/learn/$courseId/lessons/$lessonId'
+    | '/api/admin/courses/$courseId/image'
   id:
     | '__root__'
     | '/_auth'
@@ -198,6 +221,7 @@ export interface FileRouteTypes {
     | '/_dashboard/courses/$courseId'
     | '/_dashboard/students/$userId'
     | '/api/auth/$'
+    | '/api/images/$'
     | '/_dashboard/courses/'
     | '/_dashboard/students/'
     | '/_learn/learn/'
@@ -205,6 +229,7 @@ export interface FileRouteTypes {
     | '/api/admin/courses/import'
     | '/_learn/learn/$courseId/'
     | '/_learn/learn/$courseId/lessons/$lessonId'
+    | '/api/admin/courses/$courseId/image'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -212,7 +237,9 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRouteWithChildren
   LearnRoute: typeof LearnRouteWithChildren
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  ApiImagesSplatRoute: typeof ApiImagesSplatRoute
   ApiAdminCoursesImportRoute: typeof ApiAdminCoursesImportRoute
+  ApiAdminCoursesCourseIdImageRoute: typeof ApiAdminCoursesCourseIdImageRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -301,6 +328,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/images/$': {
+      id: '/api/images/$'
+      path: '/api/images/$'
+      fullPath: '/api/images/$'
+      preLoaderRoute: typeof ApiImagesSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_learn/learn/$courseId/': {
       id: '/_learn/learn/$courseId/'
       path: '/learn/$courseId'
@@ -328,6 +362,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/learn/$courseId/lessons/$lessonId'
       preLoaderRoute: typeof LearnLearnCourseIdLessonsLessonIdRouteImport
       parentRoute: typeof LearnRoute
+    }
+    '/api/admin/courses/$courseId/image': {
+      id: '/api/admin/courses/$courseId/image'
+      path: '/api/admin/courses/$courseId/image'
+      fullPath: '/api/admin/courses/$courseId/image'
+      preLoaderRoute: typeof ApiAdminCoursesCourseIdImageRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }
@@ -386,7 +427,9 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRouteWithChildren,
   LearnRoute: LearnRouteWithChildren,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
+  ApiImagesSplatRoute: ApiImagesSplatRoute,
   ApiAdminCoursesImportRoute: ApiAdminCoursesImportRoute,
+  ApiAdminCoursesCourseIdImageRoute: ApiAdminCoursesCourseIdImageRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
